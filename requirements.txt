@@ -1,0 +1,1 @@
+# Dependências do MVP serão definidas após as decisões técnicas do CAP02.

@@ -1,0 +1,25 @@
+# Python e testes
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Configuração local e editores
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+
+# Índices e outros artefatos gerados pelo RAG
+data/index/
+*.faiss
+*.index
+
+# Arquivos temporários do sistema
+.DS_Store
+Thumbs.db
