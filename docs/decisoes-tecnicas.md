@@ -1,12 +1,12 @@
 # Decisões técnicas do CAP02
 
-Estas são escolhas iniciais para um MVP local e pedagógico. Versões de pacotes e comandos de instalação serão confirmados quando as dependências forem instaladas e exercitadas no CAP03. O CAP05 pode justificar ajustes de parâmetros; mudanças de tecnologia precisam de evidência.
+Estas são escolhas iniciais para um MVP local e pedagógico. As dependências diretas do backend foram instaladas e exercitadas no CAP03; as versões usadas estão em `requirements.txt`. O CAP05 pode justificar ajustes de parâmetros; mudanças de tecnologia precisam de evidência.
 
 | ID | Decisão | Motivo | Limite e verificação pendente |
 | --- | --- | --- | --- |
-| DT01 | Python 3.11 em `.venv`. | Ambiente já validado no CAP01; mantém execução isolada. | Fixar versões de dependências após instalação e testes no Windows. |
+| DT01 | Python 3.11 em `.venv`. | Ambiente já validado no CAP01; mantém execução isolada. | Versões diretas fixadas no CAP03; dependências transitivas seguem o resolvedor do `pip`. |
 | DT02 | PyMuPDF para extrair texto por página. | API direta para abrir PDF e obter texto de cada página, sem framework RAG. | Ordem de leitura e páginas sem texto devem ser conferidas no PDF real; sem OCR. |
-| DT03 | Sentence Transformers com `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` como **candidato inicial** de embeddings. | Modelo multilíngue simples de usar, com vetores de 384 dimensões; adequado para começar a testar perguntas em português. | O modelo limita a entrada a 128 tokens. Medir truncamento na ingestão e avaliar recuperação no CAP05; sua adequação ao manual ainda não foi comprovada. |
+| DT03 | Sentence Transformers com `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` como **candidato inicial** de embeddings. | Modelo multilíngue simples de usar, com vetores de 384 dimensões; o smoke test recuperou a página esperada para uma pergunta em português. | O modelo limita a entrada a 128 tokens. Nenhum dos 59 trechos do PDF atual foi truncado com `CHUNK_SIZE=350`; qualidade ampla ainda depende do CAP05. |
 | DT04 | `faiss-cpu` e `IndexFlatIP` em memória, com vetores de documento e pergunta normalizados. | Busca exata suficiente para um PDF; produto interno de vetores unitários corresponde à similaridade de cosseno. | Consome memória e reindexa ao reiniciar. Score não é probabilidade de resposta correta. |
 | DT05 | Ollama local com `gemma3:4b` como LLM generativo baseline, configurável via ambiente. | Modelo já instalado e validado em português no notebook de referência. | O contexto de 4096 tokens e o uso de GPU foram observados naquele ambiente; verificar limites reais no CAP03. Reavaliar o LLM apenas se o CAP05 demonstrar limitação relevante de qualidade, desempenho ou contexto. |
 | DT06 | Cliente Ollama HTTP pequeno, com biblioteca padrão de Python, inicialmente sem streaming. | Expõe chamada, timeout e erros sem dependência extra. | Tratar serviço/modelo indisponível e resposta inválida; não acoplar à GPU. |
@@ -31,4 +31,4 @@ Estas são escolhas iniciais para um MVP local e pedagógico. Versões de pacote
 - [Ollama: API de geração](https://docs.ollama.com/api/generate): operação com modelo, prompt e opção `stream`.
 - [Streamlit: cache de recursos](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.cache_resource): compartilhamento de recursos e requisito de segurança em acesso concorrente.
 
-O uso de um modelo multilíngue para perguntas em português é uma escolha inicial inferida do card do modelo, não uma validação de qualidade para este PDF. A avaliação do CAP05 decidirá se ele é suficiente.
+O resultado positivo de uma pergunta no CAP03 não valida a qualidade para todo o PDF. A avaliação do CAP05 decidirá se esse modelo e os parâmetros são suficientes.
