@@ -1,4 +1,4 @@
-# Arquitetura proposta
+# Arquitetura do MVP
 
 O MVP mantém dois fluxos separados: a ingestão transforma o PDF em trechos indexados; a consulta reutiliza esse índice para responder perguntas. O backend expõe uma API Python simples, independente da interface.
 
@@ -36,8 +36,8 @@ As setas de `RAG Service` mostram orquestração, enquanto as demais mostram o f
 | Retriever | Coordenar embedding da pergunta e busca Top-K. | Pergunta → trechos ordenados com score e metadados. |
 | Prompt Builder | Limitar e identificar o contexto; pedir resposta baseada nele ou declaração de insuficiência. | Pergunta + trechos → prompt. |
 | LLM Client | Enviar prompt ao Ollama e tratar indisponibilidade/erro do modelo. | Prompt → texto gerado. |
-| RAG Service | Coordenar `ingest(pdf_path)` e `ask(question)`; devolver resposta e fontes. | PDF/pergunta → índice/resposta estruturada. |
-| Streamlit | Receber pergunta e apresentar resultado e erros. | Entrada do usuário ↔ RAG Service. |
+| RAG Service | Coordenar `ingest()` e `ask(question)`; devolver resposta e fontes. | PDF configurado/pergunta → índice/resposta estruturada. |
+| Streamlit | Receber pergunta e apresentar resultado e erros, sem lógica RAG. | Entrada do usuário ↔ RAG Service. |
 
 Conceitualmente, um trecho contém `id`, `text`, `source` e `page`. Um resultado de recuperação acrescenta `score`; a resposta contém `answer` e `sources`. A posição retornada pelo FAISS identifica o trecho correspondente. Esses contratos orientam a implementação, sem exigir classes ou camadas extras no CAP03.
 
@@ -49,7 +49,7 @@ Conceitualmente, um trecho contém `id`, `text`, `source` e `page`. Um resultado
 4. Codificar os trechos e verificar quantidade, dimensão e valores finitos dos vetores.
 5. Normalizar vetores e criar um índice exato `IndexFlatIP` em memória, mantendo uma lista paralela de trechos. Falha de ingestão não deve deixar um índice parcialmente utilizável.
 
-Para o único PDF, o índice em memória evita formato de persistência e sincronização adicionais. A ingestão ocorre uma vez na inicialização do processo; uma nova execução reconstrói o índice. O CAP04 pode usar cache de recursos do Streamlit se o recarregamento em cada interação for observado, preservando o serviço como dono da ingestão. Nesse caso, mudanças no PDF, no modelo ou nos parâmetros de divisão precisam invalidar o recurso em cache.
+Para o único PDF, o índice em memória evita formato de persistência e sincronização adicionais. Na interface Streamlit, o serviço é construído uma vez por sessão e guardado em `st.session_state`; reruns por pergunta reutilizam o índice. A assinatura da configuração efetiva e dos metadados do PDF (tamanho e horário de modificação) invalida esse recurso quando necessário. O `.env` é relido a cada execução do script. Uma nova sessão constrói seu próprio serviço e índice.
 
 ## Consulta
 
@@ -59,11 +59,11 @@ Para o único PDF, o índice em memória evita formato de persistência e sincro
 4. Se não houver trechos utilizáveis, devolver falta de informação. Caso contrário, pedir ao LLM que responda apenas com evidência presente e declare insuficiência quando necessário.
 5. Devolver resposta e lista dos trechos enviados ao modelo. A interface exibe arquivo/página desses trechos como fontes consultadas.
 
-O baseline sugerido para experimentar é `Top-K=4`, `chunk_size=350` caracteres e `chunk_overlap=50` caracteres. Esses valores ainda não foram medidos no manual. O modelo de embeddings proposto aceita sequências de até 128 tokens; caracteres não equivalem a tokens. O CAP03 deve medir truncamento e ajustar o tamanho se necessário. O CAP05 avaliará qualidade e eventual limiar de relevância antes de adotá-lo.
+O baseline é `Top-K=4`, `chunk_size=350` caracteres e `chunk_overlap=50` caracteres. No PDF atual, o CAP03 obteve 59 trechos e nenhum excedeu os 128 tokens aceitos pelo modelo de embeddings. Isso não demonstra qualidade geral da recuperação; o CAP05 avaliará perguntas variadas e eventual limiar de relevância antes de adotá-lo.
 
 ## Dependências e limites
 
-- `RAG Service` depende de Loader/Chunker/Embedding/Store na ingestão e de Retriever/Prompt Builder/LLM Client na consulta. Componentes não importam Streamlit.
+- `RAG Service` depende de Loader/Chunker/Embedding/Store na ingestão e de Retriever/Prompt Builder/LLM Client na consulta. Componentes do backend não importam Streamlit; a interface importa somente configuração e serviço, além dos tipos de resposta.
 - O índice FAISS usa produto interno de vetores normalizados, equivalente à similaridade de cosseno. Maior score indica maior proximidade vetorial; não equivale a confiança factual.
 - O prompt deve tratar o conteúdo do PDF como dado, não como instrução para o sistema. O LLM pode errar mesmo com contexto correto; o CAP05 examina isso com casos reais.
 - A janela de 4096 tokens e o uso de GPU vieram da validação prévia do notebook. O cliente e o limite de contexto não devem depender da GPU nem assumir que outra máquina terá a mesma configuração.

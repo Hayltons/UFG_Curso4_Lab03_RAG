@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -36,26 +36,32 @@ class Config:
 
 
 def load_config() -> Config:
-    """Lê .env do projeto; variáveis já definidas no ambiente prevalecem."""
-    load_dotenv(PROJECT_ROOT / ".env", override=False)
+    """Lê .env a cada chamada; variáveis do processo têm precedência."""
+    local_values = dotenv_values(PROJECT_ROOT / ".env")
+
+    def setting(name: str, default: str) -> str:
+        value = os.environ.get(name)
+        if value is None:
+            value = local_values.get(name)
+        return default if value is None else value
 
     def positive_int(name: str, default: int) -> int:
-        raw = os.getenv(name, str(default))
+        raw = setting(name, str(default))
         try:
             return int(raw)
         except ValueError as exc:
             raise ValueError(f"{name} deve ser um número inteiro: {raw!r}.") from exc
 
-    pdf_path = Path(os.getenv("PDF_PATH", "data/guia-pratico-engenharia-software-com-ia-generativa.pdf"))
+    pdf_path = Path(setting("PDF_PATH", "data/guia-pratico-engenharia-software-com-ia-generativa.pdf"))
     if not pdf_path.is_absolute():
         pdf_path = PROJECT_ROOT / pdf_path
     return Config(
         pdf_path=pdf_path,
-        embedding_model=os.getenv(
+        embedding_model=setting(
             "EMBEDDING_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         ),
-        ollama_model=os.getenv("OLLAMA_MODEL", "gemma3:4b"),
-        ollama_url=os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/"),
+        ollama_model=setting("OLLAMA_MODEL", "gemma3:4b"),
+        ollama_url=setting("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/"),
         top_k=positive_int("TOP_K", 4),
         chunk_size=positive_int("CHUNK_SIZE", 350),
         chunk_overlap=positive_int("CHUNK_OVERLAP", 50),

@@ -1,6 +1,7 @@
-# Dependências do backend validadas com Python 3.11 no CAP03.
+# Dependências do MVP local validadas com Python 3.11.
 PyMuPDF==1.28.2
 sentence-transformers==6.1.0
 faiss-cpu==1.15.1
 numpy==2.4.6
 python-dotenv==1.2.4
+streamlit==1.65.0

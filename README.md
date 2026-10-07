@@ -4,7 +4,7 @@ Este projeto desenvolve um MVP educacional para consultar um único manual PDF e
 
 ## Estado atual
 
-O backend RAG em Python está implementado e validado com o PDF do MVP. A interface web e a avaliação sistemática ainda não foram implementadas.
+O backend RAG e a interface Streamlit estão integrados e validados com o PDF do MVP. A suíte pytest e a avaliação sistemática de qualidade pertencem ao CAP05.
 
 O documento escolhido para o MVP é [`data/guia-pratico-engenharia-software-com-ia-generativa.pdf`](data/guia-pratico-engenharia-software-com-ia-generativa.pdf).
 
@@ -15,8 +15,8 @@ O documento escolhido para o MVP é [`data/guia-pratico-engenharia-software-com-
 | CAP01 — Fundamentos e ambiente | Preparar Python, Git, estrutura e PDF local. | Concluído |
 | CAP02 — Escopo e arquitetura | Definir requisitos, componentes, decisões técnicas e backlog. | Concluído |
 | CAP03 — Backend | Implementar ingestão, embeddings, FAISS, recuperação, Ollama e smoke test. | Concluído |
-| CAP04 — Frontend | Criar interface Streamlit, integrá-la ao serviço RAG e cuidar da inicialização. | Próximo |
-| CAP05 — Testes e qualidade | Criar testes pytest e avaliar recuperação, fundamentação, fontes e recusa. | Planejado |
+| CAP04 — Frontend | Criar interface Streamlit, integrá-la ao serviço RAG e cuidar da inicialização. | Concluído |
+| CAP05 — Testes e qualidade | Criar testes pytest e avaliar recuperação, fundamentação, fontes e recusa. | Próximo |
 | CAP06 — Entrega final | Consolidar README, demonstração, checklist e validação final. | Planejado |
 
 Os critérios e dependências de cada tarefa estão no [backlog](docs/backlog.md). Consulte também o [plano de implementação](plano-implementacao-lab03-atualizado.md) e o [roteiro de prompts](prompts-lab03-atualizado.md). Cada capítulo termina com revisão, verificações, conventional commit e push antes de iniciar o seguinte.
@@ -31,20 +31,35 @@ Os critérios e dependências de cada tarefa estão no [backlog](docs/backlog.md
 | Busca vetorial | FAISS CPU (`IndexFlatIP`) | Índice em memória e recuperação Top-K por similaridade de cosseno. |
 | Geração | Ollama com `gemma3:4b` | Resposta local a partir do contexto recuperado. |
 | Configuração | `python-dotenv` e `.env` opcional | Parâmetros do PDF, modelos, chunking e consulta. |
-| Interface e testes | Streamlit (CAP04) e pytest (CAP05) | Etapas planejadas; ainda não integram o MVP atual. |
+| Interface | Streamlit | Formulário de pergunta, resposta, fontes consultadas e erros. |
+| Testes automatizados | pytest (CAP05) | Suíte planejada para o próximo capítulo. |
 
-As versões instaladas do backend estão em [requirements.txt](requirements.txt), e as justificativas das escolhas em [decisões técnicas](docs/decisoes-tecnicas.md). O cliente HTTP do Ollama usa a biblioteca padrão do Python; o projeto não usa LangChain nem LlamaIndex.
+As versões das dependências diretas estão em [requirements.txt](requirements.txt), e as justificativas das escolhas em [decisões técnicas](docs/decisoes-tecnicas.md). O cliente HTTP do Ollama usa a biblioteca padrão do Python; o projeto não usa LangChain nem LlamaIndex.
 
 ## Arquitetura
 
-O backend separa ingestão e consulta. O `RAGService` coordena os componentes sem depender da futura interface Streamlit:
+O `RAGService` coordena dois fluxos. O Streamlit envia perguntas ao serviço e apresenta a resposta, sem implementar recuperação ou geração:
 
-```text
-Ingestão: PDF → PDF Loader → Chunker → Embedding Service → FAISS
-Consulta: pergunta → Retriever (embedding + Top-K no FAISS) → Prompt Builder → Ollama → resposta + fontes consultadas
+```mermaid
+flowchart LR
+    UI["Streamlit (sessão)"] --> Service["RAGService"]
+    Service -->|ingestão| Loader
+    Service -->|consulta| Question
+
+    subgraph Ingestao["Ingestão do PDF"]
+        PDF["PDF local"] --> Loader["PDF Loader"] --> Chunker --> DocEmbedding["Embedding dos trechos"] --> Store[("FAISS em memória")]
+    end
+
+    subgraph Consulta["Consulta"]
+        Question["Pergunta"] --> QueryEmbedding["Embedding da pergunta"] --> Retriever["Retriever Top-K"] --> Prompt["Prompt Builder"] --> Ollama["Ollama gemma3:4b"] --> Answer["Resposta e fontes consultadas"]
+    end
+
+    Store --> Retriever
+    Answer --> Service
+    Service --> UI
 ```
 
-O PDF é indexado por `ingest()` antes das perguntas; `ask()` reutiliza o índice em memória. Cada trecho preserva arquivo e página, que acompanham os resultados da busca e a resposta. O prompt pede ao modelo que use somente o contexto recuperado e declare insuficiência quando ele não sustenta uma resposta. Veja o [diagrama e os contratos dos componentes](docs/arquitetura.md) para mais detalhes.
+Os dois fluxos de embeddings usam o mesmo modelo. `ingest()` constrói o índice antes das perguntas; `ask()` o reutiliza. Cada trecho preserva arquivo e página. O prompt pede ao modelo que use somente o contexto recuperado e declare insuficiência quando ele não sustenta uma resposta. Veja os [contratos dos componentes](docs/arquitetura.md) para mais detalhes.
 
 ## Pré-requisitos e ambiente
 
@@ -75,6 +90,16 @@ Copy-Item .env.example .env
 
 O primeiro carregamento do modelo de embeddings baixa arquivos do Hugging Face; as execuções seguintes usam o cache local. `OLLAMA_MODEL` e `EMBEDDING_MODEL` são configurações distintas. O arquivo `.env` é opcional e ignorado pelo Git; veja [.env.example](.env.example) para os parâmetros disponíveis.
 
+## Executar a interface
+
+Com o serviço Ollama ativo, inicie o Streamlit na raiz do projeto:
+
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run streamlit_app.py
+```
+
+Abra o endereço local exibido no terminal, digite uma pergunta e clique em **Perguntar**. A primeira abertura indexa o PDF; perguntas seguintes reutilizam o serviço na mesma sessão. Se o PDF ou a configuração efetiva mudar, a interface reconstrói o índice. A lista de fontes mostra páginas consultadas, inclusive quando o modelo declara que não encontrou a resposta.
+
 ## Executar o backend
 
 Com o serviço Ollama ativo, execute o smoke test reproduzível:
@@ -103,6 +128,7 @@ for source in result.sources:
 | Caminho | Finalidade |
 | --- | --- |
 | `app/` | Componentes e serviço do backend RAG; `smoke_backend.py` verifica o fluxo real. |
+| `streamlit_app.py` | Interface web fina sobre o `RAGService`. |
 | `data/` | PDF do MVP e dados locais. |
 | `tests/` | Testes automatizados planejados para o CAP05. |
 | `docs/` | Escopo, requisitos, arquitetura, decisões, backlog e registro do backend. |
@@ -110,4 +136,4 @@ for source in result.sources:
 | `.env.example` | Configuração opcional e valores padrão do backend. |
 | `requirements.txt` | Dependências diretas do backend testadas com Python 3.11. |
 
-As decisões do CAP02 estão em [escopo](docs/escopo.md), [requisitos](docs/requisitos.md), [arquitetura](docs/arquitetura.md), [decisões técnicas](docs/decisoes-tecnicas.md) e [backlog](docs/backlog.md). A verificação executada no CAP03 está em [docs/backend.md](docs/backend.md).
+As decisões do CAP02 estão em [escopo](docs/escopo.md), [requisitos](docs/requisitos.md), [arquitetura](docs/arquitetura.md), [decisões técnicas](docs/decisoes-tecnicas.md) e [backlog](docs/backlog.md). As verificações dos capítulos seguintes estão em [backend](docs/backend.md) e [frontend](docs/frontend.md).
