@@ -174,6 +174,18 @@ Para repetir os oito casos de qualidade com o PDF real e `gemma3:4b`, mantenha o
 
 O comando substitui as observações em `docs/avaliacao-rag-observacoes.jsonl`; preserve a versão anterior no Git para comparar execuções. Ele coleta resultados para revisão manual, sem calcular automaticamente a qualidade das respostas. A [estratégia de testes](docs/testes.md) relaciona requisitos, testes e prioridades. O [relatório RAG](docs/avaliacao-rag.md) separa recuperação, contexto, resposta e abstenção; ele registra respostas incompletas no baseline que a suíte de software não detecta.
 
+### Teste manual da interface pelo responsável
+
+Em 7 de outubro de 2026, o responsável testou a aplicação no navegador com as três perguntas sugeridas no roteiro local e informou que as respostas foram satisfatórias:
+
+| Nível | Pergunta |
+| --- | --- |
+| Básico | Qual é o efeito de chunks muito pequenos e muito grandes no RAG? |
+| Médio | Segundo o manual, como diagnosticar uma resposta incorreta em um sistema RAG? |
+| Mais difícil | Que cuidados devo tomar ao usar IA no desenvolvimento? |
+
+O resultado acima é o relato da sessão manual; os textos exatos das três respostas não foram arquivados. Ele confirma que a interface funcionou para essas perguntas, enquanto os casos incompletos C01, C03 e C05 da avaliação anterior permanecem como limitações conhecidas.
+
 ## Limitações do MVP
 
 - Um PDF por vez, com texto extraível; não há upload pela interface, OCR, leitura de PDF protegido por senha ou integração de vários manuais.

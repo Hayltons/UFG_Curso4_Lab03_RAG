@@ -20,6 +20,7 @@ Entrega educacional local verificada em 7 de outubro de 2026. As respostas incom
 - [x] Interface via `AppTest` com backend/Ollama reais: envio vazio gerou aviso; C02 respondeu com citação p. 12; N01 recusou; fontes únicas renderizadas e o mesmo serviço reutilizado, sem exceções. Uma primeira tentativa do script auxiliar falhou na comparação de texto acentuado via PowerShell; a repetição com literais Unicode preservados passou, sem alteração na aplicação.
 - [x] Servidor Streamlit real em `127.0.0.1:8509`: `/_stcore/health` retornou `200 ok`; `/` retornou `200` com HTML. Processo de verificação encerrado.
 - [x] Avaliação de oito perguntas do CAP05 preservada, inclusive os três resultados incompletos. O CAP06 repetiu o smoke operacional; não recalculou métricas gerais de qualidade.
+- [x] Em 7 de outubro de 2026, o responsável relatou teste manual pelo navegador com três perguntas do roteiro local (tamanho dos chunks, diagnóstico de resposta incorreta e cuidados ao usar IA) e considerou as três respostas satisfatórias. O [README](../README.md#teste-manual-da-interface-pelo-responsável) registra as perguntas; os textos gerados não foram arquivados. Esse relato não substitui os resultados do CAP05.
 
 ## Documentação, segurança e Git
 
