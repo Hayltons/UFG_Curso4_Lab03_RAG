@@ -20,6 +20,9 @@ data/index/
 *.faiss
 *.index
 
+# Roteiro local de uso da aplicação (não versionado)
+docs/teste_app_para_leigos.md
+
 # Arquivos temporários do sistema
 .DS_Store
 Thumbs.db
