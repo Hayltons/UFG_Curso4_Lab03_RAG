@@ -16,6 +16,7 @@ As tarefas seguem a ordem CAP03 → CAP06. Cada item deve produzir uma mudança 
 | B10 | CAP03 | Executar smoke test do backend. | B09 | Uma pergunta coberta e outra fora do manual registram trechos, páginas, resposta e etapa de eventual falha. |
 | B11 | CAP04 | Criar interface Streamlit e integrá-la somente ao serviço. | B09 | Usuário pergunta e vê resposta, fontes e erros; entrada vazia não é processada. |
 | B12 | CAP04 | Ajustar inicialização e cache de recursos, se necessário. | B11 | Perguntas repetidas não reindexam o PDF; a escolha de cache é explicada e verificada. |
+| B12A | CAP04 | Substituir o fluxo textual da seção Arquitetura do README por um diagrama Mermaid. | B11, B12 | Diagrama reflete a interface e os fluxos reais de ingestão e consulta; é revisado após a integração e antes do commit e push do CAP04. |
 | B13 | CAP05 | Mapear testes contra RF/RNF e priorizar riscos. | B09, B11 | Matriz requisito → teste → tipo → prioridade está documentada. |
 | B14 | CAP05 | Testar Loader e Chunker. | B02, B03, B13 | Casos de PDF válido/ausente/inválido/sem texto e preservação de páginas, tamanho e overlap passam. |
 | B15 | CAP05 | Testar embeddings, índice e Retriever. | B04–B06, B13 | Vetores, Top-K, scores e metadados passam em testes determinísticos quando possível. |
