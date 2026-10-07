@@ -902,7 +902,11 @@ configuração do Ollama/modelo, incluindo `gemma3:4b` como baseline
 validado localmente, PDF, execução, testes, pipeline RAG, limitações e
 troubleshooting básico. Inclua comandos de verificação como
 `ollama list` e `ollama ps` somente se forem coerentes com a
-implementação final.
+implementação final. Inclua também itens sobre Limitações do MVP,
+Contribuição da IA no desenvolvimento do MVP e Próximos Passos (por exemplo:
+utilizar mais de um manual, carregar PDFs novos, permitir a escolha do
+modelo local ou remoto de acordo com a possibilidade do usuário e da
+máquina). Também altere o gráfico da Arquitetura Mermaid para o tipo TD.
 
 **S:** Documentação reproduzível.
 

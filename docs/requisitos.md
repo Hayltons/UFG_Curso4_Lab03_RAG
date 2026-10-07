@@ -1,6 +1,6 @@
 # Requisitos e critérios de aceitação
 
-Os requisitos descrevem o comportamento esperado do MVP. Testes automatizados verificam contratos determinísticos; os casos de qualidade de resposta serão avaliados separadamente no CAP05.
+Os requisitos descrevem o comportamento esperado do MVP. Testes automatizados verificam contratos determinísticos; os casos de qualidade de resposta foram avaliados separadamente no [CAP05](avaliacao-rag.md). A [revisão final](revisao-final.md) registra o aceite das limitações para a entrega educacional.
 
 ## Funcionais
 

@@ -59,7 +59,7 @@ Para o único PDF, o índice em memória evita formato de persistência e sincro
 4. Se não houver trechos utilizáveis, devolver falta de informação. Caso contrário, pedir ao LLM que responda apenas com evidência presente e declare insuficiência quando necessário.
 5. Devolver resposta e lista dos trechos enviados ao modelo. A interface exibe arquivo/página desses trechos como fontes consultadas.
 
-O baseline é `Top-K=4`, `chunk_size=350` caracteres e `chunk_overlap=50` caracteres. No PDF atual, o CAP03 obteve 59 trechos e nenhum excedeu os 128 tokens aceitos pelo modelo de embeddings. Isso não demonstra qualidade geral da recuperação; o CAP05 avaliará perguntas variadas e eventual limiar de relevância antes de adotá-lo.
+O baseline é `Top-K=4`, `chunk_size=350` caracteres e `chunk_overlap=50` caracteres. No PDF atual, o CAP03 obteve 59 trechos e nenhum excedeu os 128 tokens aceitos pelo modelo de embeddings. A [avaliação do CAP05](avaliacao-rag.md) encontrou falhas de completude em três casos; sua correção foi adiada pelo responsável para após a entrega do MVP. Nenhum limiar de relevância foi adotado.
 
 ## Dependências e limites
 

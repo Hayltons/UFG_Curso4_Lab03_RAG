@@ -2,6 +2,8 @@
 
 Execução em 7 de outubro de 2026 com o PDF versionado do MVP, `gemma3:4b`, modelo de embeddings `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` e parâmetros padrão: `TOP_K=4`, `CHUNK_SIZE=350`, `CHUNK_OVERLAP=50`, `MAX_CONTEXT_CHARS=2500`. A ingestão produziu 21 páginas com texto, 59 chunks e vetores de 384 dimensões. Os oito casos terminaram sem falha técnica. As perguntas e critérios manuais estão em [`tests/eval_cases.jsonl`](../tests/eval_cases.jsonl); as observações brutas, com textos dos chunks, scores, respostas e fontes, em [`docs/avaliacao-rag-observacoes.jsonl`](avaliacao-rag-observacoes.jsonl).
 
+**Decisão de entrega no CAP06:** o responsável determinou tratar C01, C03 e C05 depois da conclusão do MVP. Os resultados e o baseline abaixo foram preservados; as ações constam dos [próximos passos](../README.md#próximos-passos) e da [revisão final](revisao-final.md).
+
 O julgamento distingue presença da evidência **completa no Top-K**, suficiência dos chunks efetivamente enviados, resposta completa e apoiada nesses chunks, citação correta e abstenção. Encontrar a página esperada por si só não prova que o chunk contém toda a resposta. As fontes exibidas pela aplicação são os trechos consultados, não uma verificação automática de cada afirmação.
 
 | Caso | Retrieval e contexto | Resposta, fonte e recusa | Julgamento |

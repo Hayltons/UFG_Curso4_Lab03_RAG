@@ -1,6 +1,6 @@
 # Decisões técnicas do CAP02
 
-Estas são escolhas iniciais para um MVP local e pedagógico. As dependências diretas do backend e da interface foram instaladas e exercitadas nos CAP03 e CAP04; as versões usadas estão em `requirements.txt`. O CAP05 pode justificar ajustes de parâmetros; mudanças de tecnologia precisam de evidência.
+Estas são escolhas iniciais para um MVP local e pedagógico. As dependências diretas do backend e da interface foram instaladas e exercitadas nos CAP03 e CAP04; as versões usadas estão em `requirements.txt`. As pendências da tabela registram o estado da decisão original. A [avaliação CAP05](avaliacao-rag.md) e a [revisão CAP06](revisao-final.md) registram os resultados posteriores: o baseline foi mantido e as respostas incompletas ficaram para após a entrega, por decisão do responsável.
 
 | ID | Decisão | Motivo | Limite e verificação pendente |
 | --- | --- | --- | --- |
@@ -31,4 +31,4 @@ Estas são escolhas iniciais para um MVP local e pedagógico. As dependências d
 - [Ollama: API de geração](https://docs.ollama.com/api/generate): operação com modelo, prompt e opção `stream`.
 - [Streamlit: cache de recursos](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.cache_resource): compartilhamento de recursos e requisito de segurança em acesso concorrente.
 
-O resultado positivo de uma pergunta no CAP03 não valida a qualidade para todo o PDF. A avaliação do CAP05 decidirá se esse modelo e os parâmetros são suficientes.
+O resultado positivo de uma pergunta no CAP03 não valida a qualidade para todo o PDF. O CAP05 registrou três respostas incompletas, mantidas como limitações aceitas para a entrega educacional no CAP06; o modelo e os parâmetros não foram otimizados para ocultar essas falhas.

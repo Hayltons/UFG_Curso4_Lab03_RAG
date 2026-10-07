@@ -19,11 +19,11 @@ OCR, múltiplos PDFs, upload pelo usuário, autenticação, multiusuário, hist�
 
 ## Premissas e restrições
 
-- O PDF já está no repositório; a extração de texto legível será verificada no CAP03. Páginas sem texto e PDF inválido devem gerar diagnóstico claro. OCR permanece fora do MVP.
+- O PDF está no repositório e teve 21 páginas com texto extraído no CAP03, resultado confirmado no CAP06. Páginas vazias são ignoradas; documento inteiramente sem texto ou inválido gera diagnóstico claro. OCR permanece fora do MVP.
 - O primeiro funcionamento é local. A instalação inicial das dependências e o primeiro download do modelo de embeddings podem exigir internet; as consultas usam componentes locais.
 - Python 3.11, `.venv`, Ollama e `gemma3:4b` foram adotados no CAP01. O modelo de embeddings é independente do modelo generativo.
 - A janela de contexto observada para o LLM foi de 4096 tokens no notebook de referência; o contexto enviado deve permanecer limitado e configurável. Esse valor observado não substitui a verificação do runtime no CAP03.
-- A fonte exibida identifica trechos recuperados. Sua relevância para cada afirmação da resposta precisa ser avaliada no CAP05.
+- A fonte exibida identifica trechos recuperados. Sua relevância foi examinada nos casos do [CAP05](avaliacao-rag.md); as limitações aceitas constam da [revisão final](revisao-final.md).
 
 ## Critérios de sucesso
 
@@ -32,4 +32,4 @@ OCR, múltiplos PDFs, upload pelo usuário, autenticação, multiusuário, hist�
 3. Uma pergunta sem evidência suficiente leva o assistente a declarar essa limitação, sem apresentar informação inventada como fato do manual.
 4. É possível exercitar ingestão e consulta diretamente em Python, sem Streamlit, e verificar separadamente testes de software e avaliação de qualidade do RAG.
 
-Os critérios 2 e 3 serão verificados com casos conhecidos do manual no CAP05; sem essa avaliação, não se presume que a recuperação ou a recusa sejam infalíveis.
+Os critérios 2 e 3 foram exercitados com casos conhecidos no CAP05 e repetidos no smoke do CAP06. Há três respostas incompletas na avaliação ampla, adiadas pelo responsável para após o MVP. Recuperação e recusa não são infalíveis; os limites da reprodução do ambiente estão no [checklist de entrega](release-checklist.md).
