@@ -129,6 +129,12 @@ Com o serviço Ollama ativo, inicie o Streamlit na raiz do projeto:
 
 Abra o endereço local exibido no terminal, digite uma pergunta e clique em **Perguntar**. A primeira abertura indexa o PDF; perguntas seguintes reutilizam o serviço na mesma sessão. Se o PDF ou a configuração efetiva mudar, a interface reconstrói o índice. A lista de fontes mostra páginas consultadas, inclusive quando o modelo declara que não encontrou a resposta. Encerre com `Ctrl+C` no terminal. O [roteiro de demonstração](docs/demo.md) contém oito perguntas e orienta a conferência das páginas.
 
+## Interface em funcionamento
+
+A captura mostra uma pergunta sobre o tamanho dos chunks, a resposta com citação da página 12 e as páginas consultadas pelo modelo. As demais páginas da lista são trechos enviados como contexto; elas não precisam sustentar essa resposta específica.
+
+![Tela do chatbot RAG com pergunta, resposta e fontes consultadas](docs/images/interface-em-funcionamento.jpg)
+
 ## Executar o backend
 
 Com o serviço Ollama ativo, execute o smoke test reproduzível:
