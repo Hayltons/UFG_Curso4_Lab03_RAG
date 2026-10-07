@@ -4,9 +4,47 @@ Este projeto desenvolve um MVP educacional para consultar um único manual PDF e
 
 ## Estado atual
 
-CAP01 preparou o ambiente; CAP02 definiu escopo e arquitetura; CAP03 implementou o backend RAG em Python. A interface Streamlit pertence ao CAP04 e a suíte pytest/avaliação de qualidade ao CAP05. Consulte o [plano de implementação](plano-implementacao-lab03-atualizado.md) e o [roteiro de prompts](prompts-lab03-atualizado.md) para a sequência de capítulos.
+O backend RAG em Python está implementado e validado com o PDF do MVP. A interface web e a avaliação sistemática ainda não foram implementadas.
 
 O documento escolhido para o MVP é [`data/guia-pratico-engenharia-software-com-ia-generativa.pdf`](data/guia-pratico-engenharia-software-com-ia-generativa.pdf).
+
+## Roadmap
+
+| Capítulo | Entrega | Estado |
+| --- | --- | --- |
+| CAP01 — Fundamentos e ambiente | Preparar Python, Git, estrutura e PDF local. | Concluído |
+| CAP02 — Escopo e arquitetura | Definir requisitos, componentes, decisões técnicas e backlog. | Concluído |
+| CAP03 — Backend | Implementar ingestão, embeddings, FAISS, recuperação, Ollama e smoke test. | Concluído |
+| CAP04 — Frontend | Criar interface Streamlit, integrá-la ao serviço RAG e cuidar da inicialização. | Próximo |
+| CAP05 — Testes e qualidade | Criar testes pytest e avaliar recuperação, fundamentação, fontes e recusa. | Planejado |
+| CAP06 — Entrega final | Consolidar README, demonstração, checklist e validação final. | Planejado |
+
+Os critérios e dependências de cada tarefa estão no [backlog](docs/backlog.md). Consulte também o [plano de implementação](plano-implementacao-lab03-atualizado.md) e o [roteiro de prompts](prompts-lab03-atualizado.md). Cada capítulo termina com revisão, verificações, conventional commit e push antes de iniciar o seguinte.
+
+## Stack
+
+| Componente | Tecnologia | Papel no MVP |
+| --- | --- | --- |
+| Linguagem e ambiente | Python 3.11 em `.venv` | Execução local do backend. |
+| Leitura do PDF | PyMuPDF | Extração de texto por página. |
+| Embeddings | Sentence Transformers, modelo `paraphrase-multilingual-MiniLM-L12-v2` | Vetores dos trechos e das perguntas. |
+| Busca vetorial | FAISS CPU (`IndexFlatIP`) | Índice em memória e recuperação Top-K por similaridade de cosseno. |
+| Geração | Ollama com `gemma3:4b` | Resposta local a partir do contexto recuperado. |
+| Configuração | `python-dotenv` e `.env` opcional | Parâmetros do PDF, modelos, chunking e consulta. |
+| Interface e testes | Streamlit (CAP04) e pytest (CAP05) | Etapas planejadas; ainda não integram o MVP atual. |
+
+As versões instaladas do backend estão em [requirements.txt](requirements.txt), e as justificativas das escolhas em [decisões técnicas](docs/decisoes-tecnicas.md). O cliente HTTP do Ollama usa a biblioteca padrão do Python; o projeto não usa LangChain nem LlamaIndex.
+
+## Arquitetura
+
+O backend separa ingestão e consulta. O `RAGService` coordena os componentes sem depender da futura interface Streamlit:
+
+```text
+Ingestão: PDF → PDF Loader → Chunker → Embedding Service → FAISS
+Consulta: pergunta → Retriever (embedding + Top-K no FAISS) → Prompt Builder → Ollama → resposta + fontes consultadas
+```
+
+O PDF é indexado por `ingest()` antes das perguntas; `ask()` reutiliza o índice em memória. Cada trecho preserva arquivo e página, que acompanham os resultados da busca e a resposta. O prompt pede ao modelo que use somente o contexto recuperado e declare insuficiência quando ele não sustenta uma resposta. Veja o [diagrama e os contratos dos componentes](docs/arquitetura.md) para mais detalhes.
 
 ## Pré-requisitos e ambiente
 
