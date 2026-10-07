@@ -23,6 +23,9 @@ data/index/
 # Roteiro local de uso da aplicação (não versionado)
 docs/teste_app_para_leigos.md
 
+# Texto pessoal para publicação no fórum (não versionado)
+forum_lab03.md
+
 # Arquivos temporários do sistema
 .DS_Store
 Thumbs.db
