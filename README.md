@@ -4,7 +4,7 @@ Este projeto desenvolve um MVP educacional para consultar um único manual PDF e
 
 ## Estado atual
 
-O backend RAG e a interface Streamlit estão integrados e validados com o PDF do MVP. A suíte pytest e a avaliação sistemática de qualidade pertencem ao CAP05.
+O backend RAG e a interface Streamlit estão integrados com o PDF do MVP. O CAP05 adicionou a suíte pytest e uma avaliação manual reproduzível do RAG; três das cinco perguntas cobertas tiveram resposta incompleta no baseline. Consulte a [avaliação de qualidade](docs/avaliacao-rag.md) para as evidências e limitações.
 
 O documento escolhido para o MVP é [`data/guia-pratico-engenharia-software-com-ia-generativa.pdf`](data/guia-pratico-engenharia-software-com-ia-generativa.pdf).
 
@@ -16,8 +16,8 @@ O documento escolhido para o MVP é [`data/guia-pratico-engenharia-software-com-
 | CAP02 — Escopo e arquitetura | Definir requisitos, componentes, decisões técnicas e backlog. | Concluído |
 | CAP03 — Backend | Implementar ingestão, embeddings, FAISS, recuperação, Ollama e smoke test. | Concluído |
 | CAP04 — Frontend | Criar interface Streamlit, integrá-la ao serviço RAG e cuidar da inicialização. | Concluído |
-| CAP05 — Testes e qualidade | Criar testes pytest e avaliar recuperação, fundamentação, fontes e recusa. | Próximo |
-| CAP06 — Entrega final | Consolidar README, demonstração, checklist e validação final. | Planejado |
+| CAP05 — Testes e qualidade | Criar testes pytest e avaliar recuperação, fundamentação, fontes e recusa. | Concluído |
+| CAP06 — Entrega final | Consolidar README, demonstração, checklist e validação final. | Próximo |
 
 Os critérios e dependências de cada tarefa estão no [backlog](docs/backlog.md). Consulte também o [plano de implementação](plano-implementacao-lab03-atualizado.md) e o [roteiro de prompts](prompts-lab03-atualizado.md). Cada capítulo termina com revisão, verificações, conventional commit e push antes de iniciar o seguinte.
 
@@ -32,7 +32,7 @@ Os critérios e dependências de cada tarefa estão no [backlog](docs/backlog.md
 | Geração | Ollama com `gemma3:4b` | Resposta local a partir do contexto recuperado. |
 | Configuração | `python-dotenv` e `.env` opcional | Parâmetros do PDF, modelos, chunking e consulta. |
 | Interface | Streamlit | Formulário de pergunta, resposta, fontes consultadas e erros. |
-| Testes automatizados | pytest (CAP05) | Suíte planejada para o próximo capítulo. |
+| Testes automatizados | pytest | Suíte local para ingestão, recuperação, serviço, cliente Ollama, configuração e interface. |
 
 As versões das dependências diretas estão em [requirements.txt](requirements.txt), e as justificativas das escolhas em [decisões técnicas](docs/decisoes-tecnicas.md). O cliente HTTP do Ollama usa a biblioteca padrão do Python; o projeto não usa LangChain nem LlamaIndex.
 
@@ -121,7 +121,23 @@ for source in result.sources:
     print(source.chunk.source, source.chunk.page, source.score)
 ```
 
-`ingest()` deve ser chamado uma vez antes de `ask()`; o índice FAISS fica em memória e é reconstruído ao reiniciar. As fontes listam os trechos enviados ao LLM, não certificam por si só que cada trecho sustenta cada frase. O prompt pede recusa quando o contexto não contém a resposta; a qualidade será avaliada no CAP05.
+`ingest()` deve ser chamado uma vez antes de `ask()`; o índice FAISS fica em memória e é reconstruído ao reiniciar. As fontes listam os trechos enviados ao LLM, não certificam por si só que cada trecho sustenta cada frase. O prompt pede recusa quando o contexto não contém a resposta; os resultados medidos estão na [avaliação RAG](docs/avaliacao-rag.md).
+
+## Testes e avaliação
+
+Execute a suíte determinística sem Ollama:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Para repetir os oito casos de qualidade com o PDF real e `gemma3:4b`, mantenha o Ollama ativo e execute:
+
+```powershell
+.\.venv\Scripts\python.exe -m tests.evaluate_rag
+```
+
+O comando grava as observações em `docs/avaliacao-rag-observacoes.jsonl`. A [estratégia de testes](docs/testes.md) relaciona requisitos, testes e prioridades. O [relatório RAG](docs/avaliacao-rag.md) separa recuperação, contexto, resposta e abstenção; ele registra respostas incompletas no baseline que a suíte de software não detecta.
 
 ## Estrutura do projeto
 
@@ -130,10 +146,10 @@ for source in result.sources:
 | `app/` | Componentes e serviço do backend RAG; `smoke_backend.py` verifica o fluxo real. |
 | `streamlit_app.py` | Interface web fina sobre o `RAGService`. |
 | `data/` | PDF do MVP e dados locais. |
-| `tests/` | Testes automatizados planejados para o CAP05. |
-| `docs/` | Escopo, requisitos, arquitetura, decisões, backlog e registro do backend. |
+| `tests/` | Testes pytest, conjunto manual de perguntas e coletor da avaliação RAG. |
+| `docs/` | Escopo, requisitos, arquitetura, decisões, backlog e registros de implementação e qualidade. |
 | `prompts/` | Template versionado da resposta RAG. |
 | `.env.example` | Configuração opcional e valores padrão do backend. |
-| `requirements.txt` | Dependências diretas do backend testadas com Python 3.11. |
+| `requirements.txt` | Dependências diretas da aplicação e dos testes com Python 3.11. |
 
 As decisões do CAP02 estão em [escopo](docs/escopo.md), [requisitos](docs/requisitos.md), [arquitetura](docs/arquitetura.md), [decisões técnicas](docs/decisoes-tecnicas.md) e [backlog](docs/backlog.md). As verificações dos capítulos seguintes estão em [backend](docs/backend.md) e [frontend](docs/frontend.md).
