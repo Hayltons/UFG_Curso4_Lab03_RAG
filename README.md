@@ -4,7 +4,7 @@ Este projeto desenvolverá um MVP educacional para consultar um único manual PD
 
 ## Estado atual
 
-O CAP01 prepara o ambiente e a estrutura inicial. Ainda não há pipeline RAG, interface web nem suíte de testes. Consulte o [plano de implementação](plano-implementacao-lab03-atualizado.md) e o [roteiro de prompts](prompts-lab03-atualizado.md) para a sequência de capítulos.
+CAP01 preparou o ambiente e a estrutura inicial. CAP02 documenta escopo, requisitos, arquitetura, decisões técnicas e backlog. Ainda não há pipeline RAG, interface web nem suíte de testes. Consulte o [plano de implementação](plano-implementacao-lab03-atualizado.md) e o [roteiro de prompts](prompts-lab03-atualizado.md) para a sequência de capítulos.
 
 O documento escolhido para o MVP é [`data/guia-pratico-engenharia-software-com-ia-generativa.pdf`](data/guia-pratico-engenharia-software-com-ia-generativa.pdf).
 
@@ -31,12 +31,12 @@ Ollama 0.34.3 e `gemma3:4b` estão instalados. O plano registra uma validação 
 
 | Caminho | Finalidade |
 | --- | --- |
-| `app/` | Código da aplicação, definido a partir do CAP02. |
+| `app/` | Código da aplicação, a implementar no CAP03. |
 | `data/` | PDF do MVP e dados locais. |
 | `tests/` | Testes automatizados futuros. |
 | `docs/` | Escopo, arquitetura e decisões futuras. |
 | `prompts/` | Prompts usados pelo produto, quando definidos. |
 | `.env.example` | Exemplo inicial de configuração. |
-| `requirements.txt` | Dependências a definir após as decisões técnicas. |
+| `requirements.txt` | Dependências escolhidas no CAP02, a instalar e validar no CAP03. |
 
-O CAP02 definirá escopo, requisitos, arquitetura, dependências e backlog. Instruções de execução do RAG e testes serão adicionadas quando essas funcionalidades existirem.
+As decisões do CAP02 estão em [escopo](docs/escopo.md), [requisitos](docs/requisitos.md), [arquitetura](docs/arquitetura.md), [decisões técnicas](docs/decisoes-tecnicas.md) e [backlog](docs/backlog.md). Instruções de execução do RAG e testes serão adicionadas quando essas funcionalidades existirem.
